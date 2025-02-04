@@ -109,6 +109,37 @@ local function destroyNonPlayerButtons()
     end
 end
 
+local searchBar = Instance.new("TextBox")
+    searchBar.Name = "searchbar"
+    searchBar.Size = UDim2.new(0, 300, 0, 30)
+	searchBar.Position = UDim2.new(0, 0, 0.9, 0)
+    searchBar.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    searchBar.TextColor3 = Color3.fromRGB(255, 255, 255)
+	searchBar.TextWrapped = true
+	searchBar.BorderSizePixel = 0
+	searchBar.Text = ""
+	searchBar.PlaceholderText = "Search..."
+    searchBar.Parent = MainFrame
+gradient(searchBar)
+
+local resultsFrame = Playerinfoframe
+
+local function filterResults()
+    local query = searchBar.Text:lower()
+
+    for _, item in pairs(Playerinfoframe:GetChildren()) do
+        if item:IsA("TextLabel") then
+            if query == "" or item.Text:lower():find(query) then
+                item.Visible = true
+            else
+                item.Visible = false 
+            end
+        end
+    end
+end
+
+searchBar:GetPropertyChangedSignal("Text"):Connect(filterResults)
+
 
 local function showPlayerButtons()
 	currentView = "players"
