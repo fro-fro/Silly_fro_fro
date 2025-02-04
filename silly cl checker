@@ -46,6 +46,7 @@ Playerinfoframe.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
 Playerinfoframe.BorderSizePixel = 0
 Playerinfoframe.ScrollBarThickness = 0
 Playerinfoframe.ZIndex = 0
+Playerinfoframe.AutomaticCanvasSize = "XY"
 Playerinfoframe.Parent = MainFrame
 
 textbutton("BackButton" ,"X", MainFrame, "TextButton")
