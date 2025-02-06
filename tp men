@@ -201,7 +201,8 @@ showSelection()
 
 
 local enemy_folder = workspace:FindFirstChild("Enemies")
-local locations = {}
+local bosslocations = {}
+local normallocations = {}
 
 -- Load enemies normally
 local enemy_names = {
@@ -231,7 +232,7 @@ local enemy_names = {
 for key, name in pairs(enemy_names) do
     local enemy = enemy_folder:FindFirstChild(name)
     if enemy and enemy:FindFirstChild("Enemy") and enemy.Enemy:FindFirstChild("EnemyLocation") then
-        locations[key] = enemy.Enemy.EnemyLocation.CFrame
+        bosslocations[key] = enemy.Enemy.EnemyLocation.CFrame
     end
 end
 
@@ -243,8 +244,24 @@ if crystal_folder then
             local nameValue = enemy:FindFirstChildWhichIsA("ObjectValue")
             if nameValue and nameValue.Value and nameValue.Value:IsA("Instance") then
                 local enemyName = nameValue.Value.Name
-                locations[enemyName] = enemy.EnemyLocation.CFrame
+                bosslocations[enemyName] = enemy.EnemyLocation.CFrame
             end
+        end
+    end
+end
+
+local otherenemy_names = {
+    ["abysse"] = "Abysse of Enis",
+    ["stuff in endless"] = "Endless Woods"
+}
+
+for key, name in pairs(otherenemy_names) do
+local enemy = enemy_folder:FindFirstChild(name)
+    if enemy:IsA("Model") and enemy:FindFirstChild("EnemyLocation") then
+        local nameValue = enemy:FindFirstChildWhichIsA("ObjectValue")
+        if nameValue and nameValue.Value and nameValue.Value:IsA("Instance") then
+            local enemyName = nameValue.Value.Name
+            normallocations[enemyName] = enemy.EnemyLocation.CFrame
         end
     end
 end
@@ -279,26 +296,49 @@ loopButton.MouseButton1Click:Connect(function()
 end)
 
 -- Function to toggle locations
-local function toggleLocation(name, button)
+local function toggleLocation(name, button, locationTable)
     if activeLocations[name] then
         activeLocations[name] = nil
         button.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
     else
-        activeLocations[name] = locations[name]
-        button.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+        local loc = locationTable[name]
+        if loc then
+            activeLocations[name] = loc
+            button.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+        end
     end
 end
 
--- Sort & Create Buttons
-local sortedNames = {}
-for name in pairs(locations) do
-    table.insert(sortedNames, name)
-end
-table.sort(sortedNames)
 
-for _, name in ipairs(sortedNames) do
+-- Sort & Create Buttons
+local sortedbossNames = {}
+for name in pairs(bosslocations) do
+    table.insert(sortedbossNames, name)
+end
+table.sort(sortedbossNames)
+
+for _, name in ipairs(sortedbossNames) do
     local locationButton = textbutton(name, name, bossScrollFrame)
-    locationButton.MouseButton1Click:Connect(function()
-        toggleLocation(name, locationButton)
-    end)
+	locationButton.MouseButton1Click:Connect(function()
+		toggleLocation(name, locationButton, bosslocations)
+	end)
+	locationButton.MouseButton2Click:Connect(function()
+    humanoidRootPart.CFrame = bosslocations[name]
+	end)
+end
+
+local sortednormalNames = {}
+for name in pairs(normallocations) do
+    table.insert(sortednormalNames, name)
+end
+table.sort(sortednormalNames)
+
+for _, name in ipairs(sortednormalNames) do
+    local locationButton = textbutton(name, name, normalScrollFrame)
+	locationButton.MouseButton1Click:Connect(function()
+		toggleLocation(name, locationButton, normallocations)
+	end)
+	locationButton.MouseButton2Click:Connect(function()
+    humanoidRootPart.CFrame = normallocations[name]
+	end)
 end
