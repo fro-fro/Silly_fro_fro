@@ -1,5 +1,3 @@
--- Fro Fro TP Menu
-
 local Players = game.Players
 local you = Players.LocalPlayer
 local character = you.Character or you.CharacterAdded:Wait()
@@ -74,33 +72,7 @@ local function textbutton(name, text, par)
     return button
 end
 
--- Cooldown Input Box
-local cooldown = 3 -- Default cooldown
-local cooldownBox = Instance.new("TextBox")
-cooldownBox.Size = UDim2.new(0.8, 0, 0, 40)
-cooldownBox.Position = UDim2.new(0.1, 0, 0, 0)
-cooldownBox.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
-cooldownBox.TextColor3 = Color3.fromRGB(255, 255, 255)
-cooldownBox.PlaceholderText = "Enter Cooldown (e.g., 2.5)"
-cooldownBox.Text = tostring(cooldown)
-cooldownBox.Parent = scrollFrame
-
--- Rounded corners for text box
-local cooldownCorner = Instance.new("UICorner")
-cooldownCorner.CornerRadius = UDim.new(0, 8)
-cooldownCorner.Parent = cooldownBox
-
-cooldownBox.FocusLost:Connect(function()
-    local num = tonumber(cooldownBox.Text)
-    if num and num > 0 then
-        cooldown = num
-    else
-        cooldownBox.Text = tostring(cooldown) -- Reset if invalid
-    end
-end)
-
 local enemy_folder = workspace:FindFirstChild("Enemies")
-
 local locations = {}
 
 local enemy_names = {
@@ -115,23 +87,41 @@ local enemy_names = {
     ["King of the Sea"] = "Heat Lovers Seaside Boss",
     ["Hellfire Bat"] = "Hell Boss",
     ["Luna"] = "Luna Boss",
-	["Shogun"] = "Samurai Island Boss",
-	["Demon Wolf"] = "Samurai Temple",
-	["King Skeleton"] = "Skeleton King",
-	["Mother Pig"] = "Sky 3 Miniboss",
-	["King Snowman"] = "Snowy Caps Boss",
-	["Talented Student"] = "Talented Student Boss",
-	["True Heart"] = "True Heart Crystal",
-	["Virus"] = "Virus Boss",
-	["Void eye"] = "Void Boss"
+    ["Shogun"] = "Samurai Island Boss",
+    ["Demon Wolf"] = "Samurai Temple",
+    ["King Skeleton"] = "Skeleton King",
+    ["Mother Pig"] = "Sky 3 Miniboss",
+    ["JOHN"] = "Sky 4 Boss Room",
+    ["King Snowman"] = "Snowy Caps Boss",
+    ["Talented Student"] = "Talented Student Boss",
+    ["True Heart"] = "True Heart Crystal",
+    ["Virus"] = "Virus Boss",
+    ["Void Eye"] = "Void Boss"
 }
 
+-- Load all regular enemies
 for key, name in pairs(enemy_names) do
     local enemy = enemy_folder:FindFirstChild(name)
     if enemy and enemy:FindFirstChild("Enemy") and enemy.Enemy:FindFirstChild("EnemyLocation") then
         locations[key] = enemy.Enemy.EnemyLocation.CFrame
     end
 end
+
+-- Handle "Crystal Mobs" enemies separately
+local crystal_folder = enemy_folder:FindFirstChild("Crystal Mobs")
+if crystal_folder then
+    for _, enemy in pairs(crystal_folder:GetChildren()) do
+        if enemy:IsA("Model") and enemy:FindFirstChild("EnemyLocation") then
+            -- Check for an ObjectValue inside the enemy model
+            local nameValue = enemy:FindFirstChildWhichIsA("ObjectValue")
+            if nameValue and nameValue.Value and nameValue.Value:IsA("Instance") then
+                local enemyName = nameValue.Value.Name -- Get the actual name as a string
+                locations[enemyName] = enemy.EnemyLocation.CFrame
+            end
+        end
+    end
+end
+
 
 local activeLocations = {} -- Track enabled locations
 
@@ -168,8 +158,8 @@ local function teleportLoop()
         if #enabledLocations > 0 then
             for i = 1, #enabledLocations do
                 if not loopEnabled then return end
-                humanoidRootPart.CFrame = CFrame.new(enabledLocations[i].Position)
-                wait(cooldown)
+                humanoidRootPart.CFrame = enabledLocations[i]
+                wait(3) -- Adjust as needed
             end
         else
             loopEnabled = false
