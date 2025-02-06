@@ -250,21 +250,54 @@ if crystal_folder then
     end
 end
 
-local otherenemy_names = {
-    ["abysse"] = "Abysse of Enis",
-    ["stuff in endless"] = "Endless Woods"
+local enemyfolders = {
+["1"] = "Primis Field 1",
+["2"] = "Thyrsus Woods",
+["3"] = "Sonus Cave",
+["4"] = "Highland",
+["5"] = "Primis Field 2",
+["6"] = "Ensis Pond",
+["7"] = "Flora Field",
+["8"] = "Samurai Temple",
+["9"] = "Highland 2",
+["10"] = "Snowy Caps",
+["11"] = "Hell",
+["12"] = "Heat Lovers Seaside 2",
+["13"] = "Heat Lovers Seaside 1",
+["14"] = "Large Cave",
+["15"] = "Evergreen",
+["16"] = "Void",
+["17"] = "Endless Woods",
+["18"] = "Sky 1",
+["19"] = "Sky 2",
+["20"] = "Sky 3",
+["21"] = "Samurai Island 2",
+["22"] = "Samurai Island 3_Special",
+["23"] = "Samurai Island 1",
+["24"] = "Abysse of Enis",
+	
 }
 
-for key, name in pairs(otherenemy_names) do
-local enemy = enemy_folder:FindFirstChild(name)
-    if enemy:IsA("Model") and enemy:FindFirstChild("EnemyLocation") then
-        local nameValue = enemy:FindFirstChildWhichIsA("ObjectValue")
-        if nameValue and nameValue.Value and nameValue.Value:IsA("Instance") then
-            local enemyName = nameValue.Value.Name
-            normallocations[enemyName] = enemy.EnemyLocation.CFrame
+for _, enemyfolder in pairs(enemyfolders) do
+local enemfolder = enemy_folder:FindFirstChild(enemyfolder)
+    for _, enemy in pairs(enemfolder:GetChildren()) do
+        if enemy:IsA("Model") and enemy.Name == "Enemy" then
+            local enemyModel = enemy:FindFirstChild("Model")
+            local enemyLocation = enemy:FindFirstChild("EnemyLocation")
+
+            if enemyModel and enemyLocation then
+                local enemyName = enemyModel.Value.Name -- Use the model name for grouping
+
+                if not normallocations[enemyName] then
+                    normallocations[enemyName] = {}
+                end
+
+                normallocations[enemyName] = enemyLocation.CFrame
+			end
         end
     end
 end
+
 
 local activeLocations = {}
 
