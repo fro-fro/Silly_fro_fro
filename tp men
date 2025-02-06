@@ -1,0 +1,189 @@
+-- Fro Fro TP Menu
+
+local Players = game.Players
+local you = Players.LocalPlayer
+local character = you.Character or you.CharacterAdded:Wait()
+local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+
+-- GUI Creation
+local tp_gui = Instance.new("ScreenGui")
+tp_gui.Name = "tp_gui"
+tp_gui.Parent = you:WaitForChild("PlayerGui")
+
+local tp_men = Instance.new("Frame")
+tp_men.Name = "Menu_frame"
+tp_men.Size = UDim2.new(0, 350, 0, 400)
+tp_men.Position = UDim2.new(0.5, -175, 0.5, -200)
+tp_men.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+tp_men.BorderSizePixel = 0
+tp_men.Active = true -- Enables dragging
+tp_men.Draggable = true -- Makes frame draggable
+tp_men.Parent = tp_gui
+
+-- Rounded Corners
+local uiCorner = Instance.new("UICorner")
+uiCorner.CornerRadius = UDim.new(0, 10)
+uiCorner.Parent = tp_men
+
+-- Close Button
+local closebutton = Instance.new("TextButton")
+closebutton.Name = "closebutton"
+closebutton.Text = "X"
+closebutton.Size = UDim2.new(0, 30, 0, 30)
+closebutton.Position = UDim2.new(1, -35, 0, 5)
+closebutton.TextColor3 = Color3.fromRGB(255, 255, 255)
+closebutton.BackgroundTransparency = 1 -- Makes background invisible
+closebutton.Parent = tp_men
+closebutton.MouseButton1Click:Connect(function()
+    tp_gui:Destroy()
+end)
+
+-- Scrollable Frame
+local scrollFrame = Instance.new("ScrollingFrame")
+scrollFrame.Size = UDim2.new(1, 0, 1, -50) -- Leaves space for close button
+scrollFrame.Position = UDim2.new(0, 0, 0, 40)
+scrollFrame.CanvasSize = UDim2.new(0, 0, 2, 0) -- Allows scrolling if content overflows
+scrollFrame.ScrollBarThickness = 0
+scrollFrame.BackgroundTransparency = 1 -- Transparent background
+scrollFrame.AutomaticCanvasSize = Enum.AutomaticSize.Y
+scrollFrame.Parent = tp_men
+
+-- UI List Layout (for auto-positioning buttons)
+local listLayout = Instance.new("UIListLayout")
+listLayout.Parent = scrollFrame
+listLayout.SortOrder = Enum.SortOrder.LayoutOrder
+listLayout.Padding = UDim.new(0, 10)
+
+-- Function to create buttons
+local function textbutton(name, text, par)
+    local button = Instance.new("TextButton")
+    button.Name = name
+    button.Text = text
+    button.Size = UDim2.new(0.8, 0, 0, 40)
+    button.Position = UDim2.new(0.1, 0, 0, 0) -- Centered
+    button.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+    button.TextColor3 = Color3.fromRGB(255, 255, 255)
+    button.BorderSizePixel = 0
+    button.Parent = par
+
+    -- Rounded corners for buttons
+    local buttonCorner = Instance.new("UICorner")
+    buttonCorner.CornerRadius = UDim.new(0, 8)
+    buttonCorner.Parent = button
+
+    return button
+end
+
+-- Cooldown Input Box
+local cooldown = 3 -- Default cooldown
+local cooldownBox = Instance.new("TextBox")
+cooldownBox.Size = UDim2.new(0.8, 0, 0, 40)
+cooldownBox.Position = UDim2.new(0.1, 0, 0, 0)
+cooldownBox.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
+cooldownBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+cooldownBox.PlaceholderText = "Enter Cooldown (e.g., 2.5)"
+cooldownBox.Text = tostring(cooldown)
+cooldownBox.Parent = scrollFrame
+
+-- Rounded corners for text box
+local cooldownCorner = Instance.new("UICorner")
+cooldownCorner.CornerRadius = UDim.new(0, 8)
+cooldownCorner.Parent = cooldownBox
+
+cooldownBox.FocusLost:Connect(function()
+    local num = tonumber(cooldownBox.Text)
+    if num and num > 0 then
+        cooldown = num
+    else
+        cooldownBox.Text = tostring(cooldown) -- Reset if invalid
+    end
+end)
+
+local enemy_folder = workspace:FindFirstChild("Enemies")
+
+local locations = {}
+
+local enemy_names = {
+    ["Him"] = "Eternal Halls Him",
+    ["Oni"] = "Samurai Island Oni",
+    ["Chaos Heart"] = "Chaos",
+    ["Challenger"] = "Challenger",
+    ["Elemental Slime"] = "Element Lab",
+    ["King Slime"] = "Ensis Pond Boss",
+    ["Queen Bee"] = "Flora Field Boss",
+    ["Heart"] = "Heart Crystal",
+    ["King of the Sea"] = "Heat Lovers Seaside Boss",
+    ["Hellfire Bat"] = "Hell Boss",
+    ["Luna"] = "Luna Boss",
+	["Shogun"] = "Samurai Island Boss",
+	["Demon Wolf"] = "Samurai Temple",
+	["King Skeleton"] = "Skeleton King",
+	["Mother Pig"] = "Sky 3 Miniboss",
+	["King Snowman"] = "Snowy Caps Boss",
+	["Talented Student"] = "Talented Student Boss",
+	["True Heart"] = "True Heart Crystal",
+	["Virus"] = "Virus Boss",
+	["Void eye"] = "Void Boss"
+}
+
+for key, name in pairs(enemy_names) do
+    local enemy = enemy_folder:FindFirstChild(name)
+    if enemy and enemy:FindFirstChild("Enemy") and enemy.Enemy:FindFirstChild("EnemyLocation") then
+        locations[key] = enemy.Enemy.EnemyLocation.CFrame
+    end
+end
+
+local activeLocations = {} -- Track enabled locations
+
+-- Function to toggle locations
+local function toggleLocation(name, button)
+    if activeLocations[name] then
+        activeLocations[name] = nil
+        button.BackgroundColor3 = Color3.fromRGB(60, 60, 60) -- Default color when disabled
+    else
+        activeLocations[name] = locations[name]
+        button.BackgroundColor3 = Color3.fromRGB(30, 30, 30) -- Darker when enabled
+    end
+end
+
+-- Create Buttons for Locations
+for name, _ in pairs(locations) do
+    local locationButton = textbutton(name, name, scrollFrame)
+    locationButton.MouseButton1Click:Connect(function()
+        toggleLocation(name, locationButton)
+    end)
+end
+
+-- Toggle Loop Button
+local loopEnabled = false
+local loopButton = textbutton("loopButton", "Start Loop", scrollFrame)
+
+local function teleportLoop()
+    while loopEnabled do
+        local enabledLocations = {}
+        for _, pos in pairs(activeLocations) do
+            table.insert(enabledLocations, pos)
+        end
+        
+        if #enabledLocations > 0 then
+            for i = 1, #enabledLocations do
+                if not loopEnabled then return end
+                humanoidRootPart.CFrame = CFrame.new(enabledLocations[i].Position)
+                wait(cooldown)
+            end
+        else
+            loopEnabled = false
+            loopButton.Text = "Start Loop"
+            return
+        end
+    end
+end
+
+loopButton.MouseButton1Click:Connect(function()
+    loopEnabled = not loopEnabled
+    loopButton.Text = loopEnabled and "Stop Loop" or "Start Loop"
+
+    if loopEnabled then
+        teleportLoop()
+    end
+end)
