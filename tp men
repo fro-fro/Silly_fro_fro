@@ -23,6 +23,18 @@ local uiCorner = Instance.new("UICorner")
 uiCorner.CornerRadius = UDim.new(0, 10)
 uiCorner.Parent = tp_men
 
+local topBarFrame = Instance.new("Frame")
+topBarFrame.Size = UDim2.new(1, 0, 0, 50) -- Fixed height for alignment
+topBarFrame.BackgroundTransparency = 1
+topBarFrame.Parent = tp_men
+
+-- Grid Layout (150x40 Cells)
+local gridLayout = Instance.new("UIGridLayout")
+gridLayout.CellSize = UDim2.new(0, 150, 0, 40) -- Each button 150x40
+gridLayout.CellPadding = UDim2.new(0, 5, 0, 5) -- Space between buttons
+gridLayout.Parent = topBarFrame
+
+
 -- Close Button
 local closebutton = Instance.new("TextButton")
 closebutton.Name = "closebutton"
@@ -32,56 +44,16 @@ closebutton.Position = UDim2.new(1, -35, 0, 5)
 closebutton.TextColor3 = Color3.fromRGB(255, 255, 255)
 closebutton.BackgroundTransparency = 1 -- Makes background invisible
 closebutton.Parent = tp_men
-closebutton.MouseButton1Click:Connect(function()
-    tp_gui:Destroy()
-end)
-
--- Scrollable Frame
-local scrollFrame = Instance.new("ScrollingFrame")
-scrollFrame.Size = UDim2.new(1, 0, 1, -50) -- Leaves space for close button
-scrollFrame.Position = UDim2.new(0, 0, 0, 40)
-scrollFrame.CanvasSize = UDim2.new(0, 0, 2, 0) -- Allows scrolling if content overflows
-scrollFrame.ScrollBarThickness = 0
-scrollFrame.BackgroundTransparency = 1 -- Transparent background
-scrollFrame.AutomaticCanvasSize = Enum.AutomaticSize.Y
-scrollFrame.Parent = tp_men
-
--- UI List Layout (for auto-positioning buttons)
-local listLayout = Instance.new("UIListLayout")
-listLayout.Parent = scrollFrame
-listLayout.SortOrder = Enum.SortOrder.LayoutOrder
-listLayout.Padding = UDim.new(0, 10)
-
--- Function to create buttons
-local function textbutton(name, text, par)
-    local button = Instance.new("TextButton")
-    button.Name = name
-    button.Text = text
-    button.Size = UDim2.new(0.8, 0, 0, 40)
-    button.Position = UDim2.new(0.1, 0, 0, 0) -- Centered
-    button.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
-    button.TextColor3 = Color3.fromRGB(255, 255, 255)
-    button.BorderSizePixel = 0
-    button.Parent = par
-
-    -- Rounded corners for buttons
-    local buttonCorner = Instance.new("UICorner")
-    buttonCorner.CornerRadius = UDim.new(0, 8)
-    buttonCorner.Parent = button
-
-    return button
-end
-
--- Cooldown Input Box
+-- Cooldown Input Box (Moved to the Top)
 local cooldown = 3 -- Default cooldown
 local cooldownBox = Instance.new("TextBox")
-cooldownBox.Size = UDim2.new(0.8, 0, 0, 40)
-cooldownBox.Position = UDim2.new(0.1, 0, 0, 0)
+cooldownBox.Size = UDim2.new(0, 150, 0, 40)
+cooldownBox.Position = UDim2.new(0, 5, 0, 50)
 cooldownBox.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
 cooldownBox.TextColor3 = Color3.fromRGB(255, 255, 255)
 cooldownBox.PlaceholderText = "Enter Cooldown (e.g., 2.5)"
 cooldownBox.Text = tostring(cooldown)
-cooldownBox.Parent = scrollFrame
+cooldownBox.Parent = topBarFrame
 
 -- Rounded corners for text box
 local cooldownCorner = Instance.new("UICorner")
@@ -97,11 +69,141 @@ cooldownBox.FocusLost:Connect(function()
     end
 end)
 
+-- Function to create buttons
+local function textbutton(name, text, par)
+    local button = Instance.new("TextButton")
+    button.Name = name
+    button.Text = text
+    button.Size = UDim2.new(0, 150, 0, 40)
+    button.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+    button.TextColor3 = Color3.fromRGB(255, 255, 255)
+    button.BorderSizePixel = 0
+    button.Parent = par
+
+    -- Rounded corners for buttons
+    local buttonCorner = Instance.new("UICorner")
+    buttonCorner.CornerRadius = UDim.new(0, 8)
+    buttonCorner.Parent = button
+
+    return button
+end
+
+-- Toggle Loop Button (Also Moved to the Top)
+local loopButton = Instance.new("TextButton")
+loopButton.Name = "loopButton"
+loopButton.Text = "Start Loop"
+loopButton.Size = UDim2.new(0, 150, 0, 40)
+loopButton.Position = UDim2.new(0, 165, 0, 50)
+loopButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+loopButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+loopButton.BorderSizePixel = 0
+loopButton.Parent = topBarFrame
+
+-- Rounded corners for loop button
+local loopButtonCorner = Instance.new("UICorner")
+loopButtonCorner.CornerRadius = UDim.new(0, 8)
+loopButtonCorner.Parent = loopButton
+
+-- Normal Enemies Scroll Frame
+local normalScrollFrame = Instance.new("ScrollingFrame")
+normalScrollFrame.Size = UDim2.new(1, 0, 1, -45) -- Leaves space for cooldown & loop button
+normalScrollFrame.Position = UDim2.new(0, 0, 0, 45) -- Moved down
+normalScrollFrame.CanvasSize = UDim2.new(0, 0, 2, 0)
+normalScrollFrame.ScrollBarThickness = 0
+normalScrollFrame.BackgroundTransparency = 1
+normalScrollFrame.AutomaticCanvasSize = Enum.AutomaticSize.Y
+normalScrollFrame.Visible = false
+normalScrollFrame.ZIndex = 0
+normalScrollFrame.Parent = tp_men
+
+local normalLayout = Instance.new("UIGridLayout")
+normalLayout.CellSize = UDim2.new(0, 150, 0, 40)
+normalLayout.Parent = normalScrollFrame
+
+-- Boss Enemies Scroll Frame
+local bossScrollFrame = normalScrollFrame:Clone()
+bossScrollFrame.Parent = tp_men
+bossScrollFrame.Visible = false
+
+-- Selection Menu
+local selectionFrame = Instance.new("Frame")
+selectionFrame.Size = UDim2.new(1, 0, 1, -45)
+selectionFrame.Position = UDim2.new(0, 0, 0, 45)
+selectionFrame.BackgroundTransparency = 1
+normalScrollFrame.ZIndex = 0
+selectionFrame.Parent = tp_men
+
+local gridLayout = Instance.new("UIGridLayout")
+gridLayout.Parent = selectionFrame
+gridLayout.SortOrder = Enum.SortOrder.LayoutOrder
+gridLayout.CellSize = UDim2.new(0, 150, 0, 40) -- Each button 150x40
+gridLayout.CellPadding = UDim2.new(0, 5, 0, 5) -- Space between buttons
+
+-- Create Normal & Boss Selection Buttons
+local normalButton = textbutton("Normal", "Normal Enemies", selectionFrame)
+local bossButton = textbutton("Boss", "Boss Enemies", selectionFrame)
+
+-- Back Button (Modifies Existing One)
+closebutton.Text = "Back"
+closebutton.Visible = true
+
+
+-- Grid Layout (150x40 Cells)
+local gridLayout = Instance.new("UIGridLayout")
+gridLayout.Parent = normalScrollFrame
+gridLayout.SortOrder = Enum.SortOrder.LayoutOrder
+gridLayout.CellSize = UDim2.new(0, 150, 0, 40) -- Each button 150x40
+gridLayout.CellPadding = UDim2.new(0, 5, 0, 5) -- Space between buttons
+
+-- Grid Layout (150x40 Cells)
+local gridLayout = Instance.new("UIGridLayout")
+gridLayout.Parent = bossScrollFrame
+gridLayout.SortOrder = Enum.SortOrder.LayoutOrder
+gridLayout.CellSize = UDim2.new(0, 150, 0, 40) -- Each button 150x40
+gridLayout.CellPadding = UDim2.new(0, 5, 0, 5) -- Space between buttons
+
+local function showSelection()
+    selectionFrame.Visible = true
+    normalScrollFrame.Visible = false
+    bossScrollFrame.Visible = false
+    closebutton.Text = "X" -- Back to closing mode
+end
+
+local function showEnemies(enemyType)
+    selectionFrame.Visible = false
+    closebutton.Text = "Back" -- Switch to back function
+
+    if enemyType == "Normal" then
+        normalScrollFrame.Visible = true
+        bossScrollFrame.Visible = false
+    else
+        normalScrollFrame.Visible = false
+        bossScrollFrame.Visible = true
+    end
+end
+
+
+-- Connect Buttons
+normalButton.MouseButton1Click:Connect(function() showEnemies("Normal") end)
+bossButton.MouseButton1Click:Connect(function() showEnemies("Boss") end)
+
+-- Back Button Logic
+closebutton.MouseButton1Click:Connect(function()
+    if selectionFrame.Visible then
+        tp_gui:Destroy() -- Close GUI
+    else
+        showSelection() -- Return to selection menu
+    end
+end)
+
+-- Start on Selection Screen
+showSelection()
 
 
 local enemy_folder = workspace:FindFirstChild("Enemies")
 local locations = {}
 
+-- Load enemies normally
 local enemy_names = {
     ["Him"] = "Eternal Halls Him",
     ["Oni"] = "Samurai Island Oni",
@@ -126,7 +228,6 @@ local enemy_names = {
     ["Void Eye"] = "Void Boss"
 }
 
--- Load all regular enemies
 for key, name in pairs(enemy_names) do
     local enemy = enemy_folder:FindFirstChild(name)
     if enemy and enemy:FindFirstChild("Enemy") and enemy.Enemy:FindFirstChild("EnemyLocation") then
@@ -134,73 +235,70 @@ for key, name in pairs(enemy_names) do
     end
 end
 
--- Handle "Crystal Mobs" enemies separately
+-- Handle "Crystal Mobs" separately
 local crystal_folder = enemy_folder:FindFirstChild("Crystal Mobs")
 if crystal_folder then
     for _, enemy in pairs(crystal_folder:GetChildren()) do
         if enemy:IsA("Model") and enemy:FindFirstChild("EnemyLocation") then
-            -- Check for an ObjectValue inside the enemy model
             local nameValue = enemy:FindFirstChildWhichIsA("ObjectValue")
             if nameValue and nameValue.Value and nameValue.Value:IsA("Instance") then
-                local enemyName = nameValue.Value.Name -- Get the actual name as a string
+                local enemyName = nameValue.Value.Name
                 locations[enemyName] = enemy.EnemyLocation.CFrame
             end
         end
     end
 end
 
+local activeLocations = {}
 
-local activeLocations = {} -- Track enabled locations
-
--- Function to toggle locations
-local function toggleLocation(name, button)
-    if activeLocations[name] then
-        activeLocations[name] = nil
-        button.BackgroundColor3 = Color3.fromRGB(60, 60, 60) -- Default color when disabled
-    else
-        activeLocations[name] = locations[name]
-        button.BackgroundColor3 = Color3.fromRGB(30, 30, 30) -- Darker when enabled
-    end
-end
-
--- Create Buttons for Locations
-for name, _ in pairs(locations) do
-    local locationButton = textbutton(name, name, scrollFrame)
-    locationButton.MouseButton1Click:Connect(function()
-        toggleLocation(name, locationButton)
-    end)
-end
-
--- Toggle Loop Button
 local loopEnabled = false
-local loopButton = textbutton("loopButton", "Start Loop", scrollFrame)
-
-local function teleportLoop()
-    while loopEnabled do
-        local enabledLocations = {}
-        for _, pos in pairs(activeLocations) do
-            table.insert(enabledLocations, pos)
-        end
-        
-        if #enabledLocations > 0 then
-            for i = 1, #enabledLocations do
-                if not loopEnabled then return end
-                humanoidRootPart.CFrame = enabledLocations[i]
-                wait(cooldown) -- Adjust as needed
-            end
-        else
-            loopEnabled = false
-            loopButton.Text = "Start Loop"
-            return
-        end
-    end
-end
-
 loopButton.MouseButton1Click:Connect(function()
     loopEnabled = not loopEnabled
     loopButton.Text = loopEnabled and "Stop Loop" or "Start Loop"
 
     if loopEnabled then
-        teleportLoop()
+        while loopEnabled do
+            local enabledLocations = {}
+            for _, pos in pairs(activeLocations) do
+                table.insert(enabledLocations, pos)
+            end
+
+            if #enabledLocations > 0 then
+                for i = 1, #enabledLocations do
+                    if not loopEnabled then return end
+                    humanoidRootPart.CFrame = enabledLocations[i]
+                    wait(cooldown)
+                end
+            else
+                loopEnabled = false
+                loopButton.Text = "Start Loop"
+                return
+            end
+        end
     end
 end)
+
+-- Function to toggle locations
+local function toggleLocation(name, button)
+    if activeLocations[name] then
+        activeLocations[name] = nil
+        button.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+    else
+        activeLocations[name] = locations[name]
+        button.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    end
+end
+
+-- Sort & Create Buttons
+local sortedNames = {}
+for name in pairs(locations) do
+    table.insert(sortedNames, name)
+end
+table.sort(sortedNames)
+
+for _, name in ipairs(sortedNames) do
+    local locationButton = textbutton(name, name, bossScrollFrame)
+    locationButton.MouseButton1Click:Connect(function()
+        toggleLocation(name, locationButton)
+    end)
+end
