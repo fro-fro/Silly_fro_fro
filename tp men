@@ -72,6 +72,33 @@ local function textbutton(name, text, par)
     return button
 end
 
+-- Cooldown Input Box
+local cooldown = 3 -- Default cooldown
+local cooldownBox = Instance.new("TextBox")
+cooldownBox.Size = UDim2.new(0.8, 0, 0, 40)
+cooldownBox.Position = UDim2.new(0.1, 0, 0, 0)
+cooldownBox.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
+cooldownBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+cooldownBox.PlaceholderText = "Enter Cooldown (e.g., 2.5)"
+cooldownBox.Text = tostring(cooldown)
+cooldownBox.Parent = scrollFrame
+
+-- Rounded corners for text box
+local cooldownCorner = Instance.new("UICorner")
+cooldownCorner.CornerRadius = UDim.new(0, 8)
+cooldownCorner.Parent = cooldownBox
+
+cooldownBox.FocusLost:Connect(function()
+    local num = tonumber(cooldownBox.Text)
+    if num and num > 0 then
+        cooldown = num
+    else
+        cooldownBox.Text = tostring(cooldown) -- Reset if invalid
+    end
+end)
+
+
+
 local enemy_folder = workspace:FindFirstChild("Enemies")
 local locations = {}
 
@@ -159,7 +186,7 @@ local function teleportLoop()
             for i = 1, #enabledLocations do
                 if not loopEnabled then return end
                 humanoidRootPart.CFrame = enabledLocations[i]
-                wait(3) -- Adjust as needed
+                wait(cooldown) -- Adjust as needed
             end
         else
             loopEnabled = false
