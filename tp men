@@ -3,7 +3,6 @@ local you = Players.LocalPlayer
 local character = you.Character or you.CharacterAdded:Wait()
 local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
 
--- GUI Creation
 local tp_gui = Instance.new("ScreenGui")
 tp_gui.Name = "tp_gui"
 tp_gui.Parent = you:WaitForChild("PlayerGui")
@@ -14,64 +13,20 @@ tp_men.Size = UDim2.new(0, 350, 0, 400)
 tp_men.Position = UDim2.new(0.5, -175, 0.5, -200)
 tp_men.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
 tp_men.BorderSizePixel = 0
-tp_men.Active = true -- Enables dragging
-tp_men.Draggable = true -- Makes frame draggable
+tp_men.Active = true
+tp_men.Draggable = true
 tp_men.Parent = tp_gui
 
--- Rounded Corners
 local uiCorner = Instance.new("UICorner")
-uiCorner.CornerRadius = UDim.new(0, 10)
+uiCorner.CornerRadius = UDim.new(0, 8)
 uiCorner.Parent = tp_men
 
-local topBarFrame = Instance.new("Frame")
-topBarFrame.Size = UDim2.new(1, 0, 0, 50) -- Fixed height for alignment
-topBarFrame.BackgroundTransparency = 1
-topBarFrame.Parent = tp_men
-
--- Grid Layout (150x40 Cells)
 local gridLayout = Instance.new("UIGridLayout")
-gridLayout.CellSize = UDim2.new(0, 150, 0, 40) -- Each button 150x40
-gridLayout.CellPadding = UDim2.new(0, 5, 0, 5) -- Space between buttons
-gridLayout.Parent = topBarFrame
+gridLayout.CellSize = UDim2.new(0, 150, 0, 40)
+gridLayout.CellPadding = UDim2.new(0, 5, 0, 5)
 
-
--- Close Button
-local closebutton = Instance.new("TextButton")
-closebutton.Name = "closebutton"
-closebutton.Text = "X"
-closebutton.Size = UDim2.new(0, 30, 0, 30)
-closebutton.Position = UDim2.new(1, -35, 0, 5)
-closebutton.TextColor3 = Color3.fromRGB(255, 255, 255)
-closebutton.BackgroundTransparency = 1 -- Makes background invisible
-closebutton.Parent = tp_men
--- Cooldown Input Box (Moved to the Top)
-local cooldown = 3 -- Default cooldown
-local cooldownBox = Instance.new("TextBox")
-cooldownBox.Size = UDim2.new(0, 150, 0, 40)
-cooldownBox.Position = UDim2.new(0, 5, 0, 50)
-cooldownBox.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
-cooldownBox.TextColor3 = Color3.fromRGB(255, 255, 255)
-cooldownBox.PlaceholderText = "Enter Cooldown (e.g., 2.5)"
-cooldownBox.Text = tostring(cooldown)
-cooldownBox.Parent = topBarFrame
-
--- Rounded corners for text box
-local cooldownCorner = Instance.new("UICorner")
-cooldownCorner.CornerRadius = UDim.new(0, 8)
-cooldownCorner.Parent = cooldownBox
-
-cooldownBox.FocusLost:Connect(function()
-    local num = tonumber(cooldownBox.Text)
-    if num and num > 0 then
-        cooldown = num
-    else
-        cooldownBox.Text = tostring(cooldown) -- Reset if invalid
-    end
-end)
-
--- Function to create buttons
-local function textbutton(name, text, par)
-    local button = Instance.new("TextButton")
+local function textbutton(name, text, par, typee)
+    local button = Instance.new(typee)
     button.Name = name
     button.Text = text
     button.Size = UDim2.new(0, 150, 0, 40)
@@ -80,34 +35,56 @@ local function textbutton(name, text, par)
     button.BorderSizePixel = 0
     button.Parent = par
 
-    -- Rounded corners for buttons
-    local buttonCorner = Instance.new("UICorner")
-    buttonCorner.CornerRadius = UDim.new(0, 8)
+    local buttonCorner = uiCorner:Clone()
     buttonCorner.Parent = button
 
     return button
 end
 
--- Toggle Loop Button (Also Moved to the Top)
-local loopButton = Instance.new("TextButton")
-loopButton.Name = "loopButton"
-loopButton.Text = "Start Loop"
-loopButton.Size = UDim2.new(0, 150, 0, 40)
-loopButton.Position = UDim2.new(0, 165, 0, 50)
-loopButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
-loopButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-loopButton.BorderSizePixel = 0
-loopButton.Parent = topBarFrame
+local topBarFrame = Instance.new("Frame")
+topBarFrame.Size = UDim2.new(1, 0, 0, 50)
+topBarFrame.BackgroundTransparency = 1
+topBarFrame.Parent = tp_men
 
--- Rounded corners for loop button
-local loopButtonCorner = Instance.new("UICorner")
-loopButtonCorner.CornerRadius = UDim.new(0, 8)
+
+local toplayout = gridLayout:Clone()
+toplayout.Parent = topBarFrame
+
+local closebutton = textbutton("closebutton", "X", tp_men, "TextButton")
+closebutton.Size = UDim2.new(0, 30, 0, 30)
+closebutton.Position = UDim2.new(1, -35, 0, 5)
+closebutton.BackgroundTransparency = 1
+
+local cooldown = 3
+local cooldownBox = textbutton("cooldownBox", "3", topBarFrame, "TextBox")
+cooldownBox.Position = UDim2.new(0, 5, 0, 50)
+cooldownBox.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
+cooldownBox.PlaceholderText = "Enter Cooldown (e.g., 2.5)"
+cooldownBox.Text = tostring(cooldown)
+
+local cooldownCorner = uiCorner:Clone()
+cooldownCorner.Parent = cooldownBox
+
+cooldownBox.FocusLost:Connect(function()
+    local num = tonumber(cooldownBox.Text)
+    if num and num > 0 then
+        cooldown = num
+    else
+        cooldownBox.Text = tostring(cooldown)
+    end
+end)
+
+
+local loopButton = textbutton("loopButton", "Start Loop", topBarFrame, "TextButton")
+loopButton.Position = UDim2.new(0, 165, 0, 50)
+loopButton.BorderSizePixel = 0
+
+local loopButtonCorner = uiCorner:Clone()
 loopButtonCorner.Parent = loopButton
 
--- Normal Enemies Scroll Frame
 local normalScrollFrame = Instance.new("ScrollingFrame")
-normalScrollFrame.Size = UDim2.new(1, 0, 1, -45) -- Leaves space for cooldown & loop button
-normalScrollFrame.Position = UDim2.new(0, 0, 0, 45) -- Moved down
+normalScrollFrame.Size = UDim2.new(1, 0, 1, -45)
+normalScrollFrame.Position = UDim2.new(0, 0, 0, 45)
 normalScrollFrame.CanvasSize = UDim2.new(0, 0, 2, 0)
 normalScrollFrame.ScrollBarThickness = 0
 normalScrollFrame.BackgroundTransparency = 1
@@ -116,16 +93,10 @@ normalScrollFrame.Visible = false
 normalScrollFrame.ZIndex = 0
 normalScrollFrame.Parent = tp_men
 
-local normalLayout = Instance.new("UIGridLayout")
-normalLayout.CellSize = UDim2.new(0, 150, 0, 40)
-normalLayout.Parent = normalScrollFrame
-
--- Boss Enemies Scroll Frame
 local bossScrollFrame = normalScrollFrame:Clone()
 bossScrollFrame.Parent = tp_men
 bossScrollFrame.Visible = false
 
--- Selection Menu
 local selectionFrame = Instance.new("Frame")
 selectionFrame.Size = UDim2.new(1, 0, 1, -45)
 selectionFrame.Position = UDim2.new(0, 0, 0, 45)
@@ -133,45 +104,32 @@ selectionFrame.BackgroundTransparency = 1
 normalScrollFrame.ZIndex = 0
 selectionFrame.Parent = tp_men
 
-local gridLayout = Instance.new("UIGridLayout")
+local gridLayout1 = gridLayout:Clone()
 gridLayout.Parent = selectionFrame
-gridLayout.SortOrder = Enum.SortOrder.LayoutOrder
-gridLayout.CellSize = UDim2.new(0, 150, 0, 40) -- Each button 150x40
-gridLayout.CellPadding = UDim2.new(0, 5, 0, 5) -- Space between buttons
 
--- Create Normal & Boss Selection Buttons
-local normalButton = textbutton("Normal", "Normal Enemies", selectionFrame)
-local bossButton = textbutton("Boss", "Boss Enemies", selectionFrame)
+local normalButton = textbutton("Normal", "Normal Enemies", selectionFrame, "TextButton")
+local bossButton = textbutton("Boss", "Boss Enemies", selectionFrame, "TextButton")
 
--- Back Button (Modifies Existing One)
+
 closebutton.Text = "Back"
 closebutton.Visible = true
 
+local gridLayout2 = gridLayout:Clone()
+gridLayout1.Parent = normalScrollFrame
 
--- Grid Layout (150x40 Cells)
-local gridLayout = Instance.new("UIGridLayout")
-gridLayout.Parent = normalScrollFrame
-gridLayout.SortOrder = Enum.SortOrder.LayoutOrder
-gridLayout.CellSize = UDim2.new(0, 150, 0, 40) -- Each button 150x40
-gridLayout.CellPadding = UDim2.new(0, 5, 0, 5) -- Space between buttons
-
--- Grid Layout (150x40 Cells)
-local gridLayout = Instance.new("UIGridLayout")
-gridLayout.Parent = bossScrollFrame
-gridLayout.SortOrder = Enum.SortOrder.LayoutOrder
-gridLayout.CellSize = UDim2.new(0, 150, 0, 40) -- Each button 150x40
-gridLayout.CellPadding = UDim2.new(0, 5, 0, 5) -- Space between buttons
+local gridLayout3 = gridLayout:Clone()
+gridLayout2.Parent = bossScrollFrame
 
 local function showSelection()
     selectionFrame.Visible = true
     normalScrollFrame.Visible = false
     bossScrollFrame.Visible = false
-    closebutton.Text = "X" -- Back to closing mode
+    closebutton.Text = "X"
 end
 
 local function showEnemies(enemyType)
     selectionFrame.Visible = false
-    closebutton.Text = "Back" -- Switch to back function
+    closebutton.Text = "Back" 
 
     if enemyType == "Normal" then
         normalScrollFrame.Visible = true
@@ -182,21 +140,17 @@ local function showEnemies(enemyType)
     end
 end
 
-
--- Connect Buttons
 normalButton.MouseButton1Click:Connect(function() showEnemies("Normal") end)
 bossButton.MouseButton1Click:Connect(function() showEnemies("Boss") end)
 
--- Back Button Logic
 closebutton.MouseButton1Click:Connect(function()
     if selectionFrame.Visible then
-        tp_gui:Destroy() -- Close GUI
+        tp_gui:Destroy()
     else
-        showSelection() -- Return to selection menu
+        showSelection()
     end
 end)
 
--- Start on Selection Screen
 showSelection()
 
 
@@ -204,7 +158,6 @@ local enemy_folder = workspace:FindFirstChild("Enemies")
 local bosslocations = {}
 local normallocations = {}
 
--- Load enemies normally
 local enemy_names = {
     ["Him"] = "Eternal Halls Him",
     ["Oni"] = "Samurai Island Oni",
@@ -232,11 +185,10 @@ local enemy_names = {
 for key, name in pairs(enemy_names) do
     local enemy = enemy_folder:FindFirstChild(name)
     if enemy and enemy:FindFirstChild("Enemy") and enemy.Enemy:FindFirstChild("EnemyLocation") then
-        bosslocations[key] = enemy.Enemy.EnemyLocation.CFrame
+        bosslocations[key] = {enemy.Enemy.EnemyLocation.CFrame}
     end
 end
 
--- Handle "Crystal Mobs" separately
 local crystal_folder = enemy_folder:FindFirstChild("Crystal Mobs")
 if crystal_folder then
     for _, enemy in pairs(crystal_folder:GetChildren()) do
@@ -258,7 +210,7 @@ local enemyfolders = {
 ["5"] = "Primis Field 2",
 ["6"] = "Ensis Pond",
 ["7"] = "Flora Field",
-["8"] = "Samurai Temple",
+["8"] = "Abysse of Enis",
 ["9"] = "Highland 2",
 ["10"] = "Snowy Caps",
 ["11"] = "Hell",
@@ -274,26 +226,26 @@ local enemyfolders = {
 ["21"] = "Samurai Island 2",
 ["22"] = "Samurai Island 3_Special",
 ["23"] = "Samurai Island 1",
-["24"] = "Abysse of Enis",
-	
 }
 
 for _, enemyfolder in pairs(enemyfolders) do
-local enemfolder = enemy_folder:FindFirstChild(enemyfolder)
-    for _, enemy in pairs(enemfolder:GetChildren()) do
-        if enemy:IsA("Model") and enemy.Name == "Enemy" then
-            local enemyModel = enemy:FindFirstChild("Model")
-            local enemyLocation = enemy:FindFirstChild("EnemyLocation")
+    local enemfolder = enemy_folder:FindFirstChild(enemyfolder)
+    if enemfolder then
+        for _, enemy in pairs(enemfolder:GetChildren()) do
+            if enemy:IsA("Model") and enemy.Name == "Enemy" then
+                local enemyModel = enemy:FindFirstChild("Model")
+                local enemyLocation = enemy:FindFirstChild("EnemyLocation")
 
-            if enemyModel and enemyLocation then
-                local enemyName = enemyModel.Value.Name -- Use the model name for grouping
+                if enemyModel and enemyLocation then
+                    local enemyName = enemyModel.Value.Name 
 
-                if not normallocations[enemyName] then
-                    normallocations[enemyName] = {}
+                    if not normallocations[enemyName] then
+                        normallocations[enemyName] = {}
+                    end
+
+                    table.insert(normallocations[enemyName], enemyLocation.CFrame)
                 end
-
-                normallocations[enemyName] = enemyLocation.CFrame
-			end
+            end
         end
     end
 end
@@ -301,64 +253,60 @@ end
 
 local activeLocations = {}
 
-local loopEnabled = false
-loopButton.MouseButton1Click:Connect(function()
-    loopEnabled = not loopEnabled
-    loopButton.Text = loopEnabled and "Stop Loop" or "Start Loop"
-
-    if loopEnabled then
-        while loopEnabled do
-            local enabledLocations = {}
-            for _, pos in pairs(activeLocations) do
-                table.insert(enabledLocations, pos)
-            end
-
-            if #enabledLocations > 0 then
-                for i = 1, #enabledLocations do
-                    if not loopEnabled then return end
-                    humanoidRootPart.CFrame = enabledLocations[i]
-                    wait(cooldown)
-                end
-            else
-                loopEnabled = false
-                loopButton.Text = "Start Loop"
-                return
-            end
-        end
-    end
-end)
-
--- Function to toggle locations
 local function toggleLocation(name, button, locationTable)
     if activeLocations[name] then
         activeLocations[name] = nil
         button.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
     else
         local loc = locationTable[name]
-        if loc then
-            activeLocations[name] = loc
+        if loc and #loc > 0 then
+            activeLocations[name] = {locations = loc, index = 1}
             button.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
         end
     end
 end
 
+loopButton.MouseButton1Click:Connect(function()
+    loopEnabled = not loopEnabled
+    loopButton.Text = loopEnabled and "Stop Loop" or "Start Loop"
 
--- Sort & Create Buttons
+    if loopEnabled then
+        while loopEnabled do
+            local activeKeys = {}
+
+            for name in pairs(activeLocations) do
+                table.insert(activeKeys, name)
+            end
+
+            if #activeKeys == 0 then
+                loopEnabled = false
+                loopButton.Text = "Start Loop"
+                return
+            end
+
+            for _, name in ipairs(activeKeys) do
+                local data = activeLocations[name]
+                local locations = data.locations
+                local index = data.index
+
+                if locations and #locations > 0 then
+                    humanoidRootPart.CFrame = locations[index]
+
+                    data.index = (index % #locations) + 1
+                end
+
+                wait(cooldown)
+                if not loopEnabled then return end
+            end
+        end
+    end
+end)
+
 local sortedbossNames = {}
 for name in pairs(bosslocations) do
     table.insert(sortedbossNames, name)
 end
 table.sort(sortedbossNames)
-
-for _, name in ipairs(sortedbossNames) do
-    local locationButton = textbutton(name, name, bossScrollFrame)
-	locationButton.MouseButton1Click:Connect(function()
-		toggleLocation(name, locationButton, bosslocations)
-	end)
-	locationButton.MouseButton2Click:Connect(function()
-    humanoidRootPart.CFrame = bosslocations[name]
-	end)
-end
 
 local sortednormalNames = {}
 for name in pairs(normallocations) do
@@ -366,12 +314,43 @@ for name in pairs(normallocations) do
 end
 table.sort(sortednormalNames)
 
+local function teleportToNearestLocation(locations)
+    if not locations or #locations == 0 then return end
+
+    local closest = locations[1]
+    local minDistance = (humanoidRootPart.Position - closest.Position).Magnitude
+
+    for _, loc in ipairs(locations) do
+        local distance = (humanoidRootPart.Position - loc.Position).Magnitude
+        if distance < minDistance then
+            closest = loc
+            minDistance = distance
+        end
+    end
+
+    humanoidRootPart.CFrame = closest
+end
+
 for _, name in ipairs(sortednormalNames) do
-    local locationButton = textbutton(name, name, normalScrollFrame)
-	locationButton.MouseButton1Click:Connect(function()
-		toggleLocation(name, locationButton, normallocations)
-	end)
-	locationButton.MouseButton2Click:Connect(function()
-    humanoidRootPart.CFrame = normallocations[name]
-	end)
+    local locationButton = textbutton(name, name, normalScrollFrame, "TextButton")
+
+    locationButton.MouseButton1Click:Connect(function()
+        toggleLocation(name, locationButton, normallocations)
+    end)
+
+    locationButton.MouseButton2Click:Connect(function()
+        teleportToNearestLocation(normallocations[name])
+    end)
+end
+
+for _, name in ipairs(sortedbossNames) do
+    local locationButton = textbutton(name, name, bossScrollFrame, "TextButton")
+
+    locationButton.MouseButton1Click:Connect(function()
+        toggleLocation(name, locationButton, bosslocations)
+    end)
+
+    locationButton.MouseButton2Click:Connect(function()
+        teleportToNearestLocation(bosslocations[name])
+    end)
 end
