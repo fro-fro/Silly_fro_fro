@@ -196,7 +196,7 @@ if crystal_folder then
             local nameValue = enemy:FindFirstChildWhichIsA("ObjectValue")
             if nameValue and nameValue.Value and nameValue.Value:IsA("Instance") then
                 local enemyName = nameValue.Value.Name
-                bosslocations[enemyName] = enemy.EnemyLocation.CFrame
+                bosslocations[enemyName] = {enemy.EnemyLocation.CFrame}
             end
         end
     end
