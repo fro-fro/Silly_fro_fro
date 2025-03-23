@@ -2652,12 +2652,4 @@ function Kavo.CreateLib(kavName, themeList)
     end  
     return Tabs
 end
-local Window = Kavo.CreateLib("test name", "FroTheme")
-local ATab = Window:NewTab("Autofarm")
-local ASection = ATab:NewSection("Autofarm")
-ASection:NewButton("Stop AutoMobTP", "Stops automatically teleporting to the mob selected", function()
-getgenv().stopautotpmobloop = true
-wait(0.4)
-getgenv().stopautotpmobloop = false
-end)
 return Kavo
