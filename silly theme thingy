@@ -54,7 +54,7 @@ local themes = {
     Header = Color3.fromRGB(28, 29, 34),
     TextColor = Color3.fromRGB(255,255,255),
     ElementColor = Color3.fromRGB(32, 32, 38)
-}DarkTheme
+}
 local themeStyles = {
     DarkTheme = {
         SchemeColor = Color3.fromRGB(64, 64, 64),
@@ -160,8 +160,6 @@ function Kavo.CreateLib(kavName, themeList)
     end
     if themeList == "DarkTheme" then
         themeList = themeStyles.DarkTheme
-	elseif themeList == "FroTheme" then
-        themeList = themeStyles.FroTheme
     elseif themeList == "LightTheme" then
         themeList = themeStyles.LightTheme
     elseif themeList == "BloodTheme" then
