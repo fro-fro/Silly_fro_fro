@@ -161,6 +161,7 @@ function Kavo.CreateLib(kavName, themeList)
     if themeList == "DarkTheme" then
         themeList = themeStyles.DarkTheme
 	elseif themeList == "FroTheme" then
+	print("sumrandomshit")
         themeList = themeStyles.FroTheme
     elseif themeList == "LightTheme" then
         themeList = themeStyles.LightTheme
@@ -179,6 +180,7 @@ function Kavo.CreateLib(kavName, themeList)
     elseif themeList == "Serpent" then
         themeList = themeStyles.Serpent
     else
+	print("shit somhow broke")
         if themeList.SchemeColor == nil then
             themeList.SchemeColor = Color3.fromRGB(74, 99, 135)
         elseif themeList.Background == nil then
