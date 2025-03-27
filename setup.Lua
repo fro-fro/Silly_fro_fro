@@ -87,3 +87,19 @@ local function Main()
 end
 
 resetButton.MouseButton1Click:Connect(Main)
+
+local function buyoutbm(Bm)
+	local shop = Bm:WaitForChild("Shop")
+		for _, sum in ipairs(shop:GetChildren()) do
+		--if sum.Name == "Hp" then --names to be added
+			buyR:FireServer("Buy1", sum)
+		--end
+	end
+end
+
+workspace.Stalls["Black Market"].ChildAdded:Connect(function(new)
+	local bm = new
+	buyoutbm(bm)
+end)
+
+game:GetService("Lighting").GlobalShadows = false
