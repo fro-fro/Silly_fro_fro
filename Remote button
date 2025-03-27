@@ -1,12 +1,14 @@
 local Player = game.Players
 local player = Player.LocalPlayer
 local char = player.Character
-
-local objval1 = Instance.new("ObjectValue")
-objval1.Name = "npc val"
-objval1.Parent = char
-objval1.Value = workspace.QuestNPCs:WaitForChild("Decimating Flames")
-
+local hrp = char.HumanoidRootPart
+local objval1 = workspace.QuestNPCs:WaitForChild("Decimating Flames")
+local objval2 = workspace.QuestNPCs["Voidborn Drills"]
+local objval3 = workspace.QuestNPCs["Hate and Eternity"] --this prolly wont work ngl
+local objval4 = workspace.QuestNPCs["Get down here!"]
+local objval5 = workspace.QuestNPCs.Rageblade
+local buyR = game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Effected")
+local questR = workspace.QuestNPCs.Main.onClick
 local rpfarmgui = Instance.new("ScreenGui")
 
 rpfarmgui.Parent = player:WaitForChild("PlayerGui")
@@ -14,22 +16,46 @@ rpfarmgui.Parent = player:WaitForChild("PlayerGui")
 local remotebutton = Instance.new("TextButton")
 remotebutton.Name = "remotebutton"
 remotebutton.Text = "autoclick this"
-remotebutton.Size = UDim2.new(0, 150, 0, 50)  -- Width: 150 pixels, Height: 50 pixels
-remotebutton.Position = UDim2.new(0.5, -975, 0.9, -25)  -- Centered at the bottom of the screen
+remotebutton.Size = UDim2.new(0, 150, 0, 50) 
+remotebutton.Position = UDim2.new(0.5, -975, 0.9, -25)  
 remotebutton.Parent = rpfarmgui
 
 local function remotes()
 local questremote = workspace.QuestNPCs.Main.onClick
-local level_points = player.leaderstats.Level.Value *2
-local bonus_points = player.leaderstats.BonusSkillPoints.Value
-local points = level_points + bonus_points
-game.ReplicatedStorage.Server:FireServer("Invest", "Shield", points)
+local points = game:GetService("Players").LocalPlayer.PlayerData.Stats.LevelUpPoints.Value
+game.ReplicatedStorage.Server:FireServer("Invest", "Shield", points - 1)
+game.ReplicatedStorage.Server:FireServer("Invest", "Mana", 1)
 game.ReplicatedStorage.Server:FireServer("ResetPoints")
 game.ReplicatedStorage.Server:FireServer("UseItem", 1)
-game.ReplicatedStorage.Server:FireServer("UseItem", 2)
-workspace.QuestNPCs.Main.onClick:FireServer("MainAction", objval1.Value)
+if not game:GetService("Players").LocalPlayer.PlayerData.Quests:FindFirstChild("Decimating Flames") then
+	questR:FireServer("MainAction", objval1)
+end
+if not game:GetService("Players").LocalPlayer.PlayerData.Quests:FindFirstChild("Drilling Mission") then
+	questR:FireServer("MainAction", objval2)
+end
+if not game:GetService("Players").LocalPlayer.PlayerData.Quests:FindFirstChild("Hate and Eternity") then
+	questR:FireServer("MainAction", objval3)
+end
+if not game:GetService("Players").LocalPlayer.PlayerData.Quests:FindFirstChild("Get down here!") then
+	questR:FireServer("MainAction", objval4)
+end
+if not game:GetService("Players").LocalPlayer.PlayerData.Quests:FindFirstChild("Anger Issues") then
+	questR:FireServer("MainAction", objval5)
+end
+if game:GetService("Players").LocalPlayer.leaderstats.Gold.Value > 900000000000 then
+	for i = 1, 5 do
+		buyR:FireServer("Buy5", workspace:WaitForChild("Stalls"):WaitForChild("Initus Bay"):WaitForChild("Item Shop"):WaitForChild("Shop"):WaitForChild("Blubb Pizza"))
+	end
+end
 task.wait(0.5)
-for _, main in pairs (workspace:GetChildren()) do
+for _, main in pairs(workspace:GetChildren()) do
+	local hitboxName = "Hitbox"
+
+    if main:IsA("BasePart") and main.Name == hitboxName then
+        firetouchinterest(hrp, main, 0) 
+        firetouchinterest(hrp, main, 1)
+    end
+
 	if main.Name == "Text" or main.Name == "HitEffect" or main.Name == "DefeatedEffect" or main.Name == "Number" or main.Name == "BigShot" then
 		main:Destroy()
 	end
@@ -50,3 +76,18 @@ for _, main in pairs (workspace:GetChildren()) do
 	end
 end
 remotebutton.MouseButton1Click:Connect(remotes)
+local function buyoutbm(Bm)
+	local shop = Bm:WaitForChild("Shop")
+		for _, sum in ipairs(shop:GetChildren()) do
+		--if sum.Name == "Hp" then --names to be added
+			buyR:FireServer("Buy1", sum)
+		--end
+	end
+end
+
+workspace.Stalls["Black Market"].ChildAdded:Connect(function(new)
+	local bm = new
+	buyoutbm(bm)
+end)
+
+game:GetService("Lighting").GlobalShadows = false
