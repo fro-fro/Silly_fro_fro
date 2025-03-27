@@ -1,3 +1,4 @@
+
 local Player = game.Players
 local player = Player.LocalPlayer
 local char = player.Character
@@ -21,50 +22,51 @@ remotebutton.Position = UDim2.new(0.5, -975, 0.9, -25)
 remotebutton.Parent = rpfarmgui
 
 local function remotes()
-local questremote = workspace.QuestNPCs.Main.onClick
-local points = game:GetService("Players").LocalPlayer.PlayerData.Stats.LevelUpPoints.Value
-game.ReplicatedStorage.Server:FireServer("Invest", "Shield", points - 1)
-game.ReplicatedStorage.Server:FireServer("Invest", "Mana", 1)
-game.ReplicatedStorage.Server:FireServer("ResetPoints")
-game.ReplicatedStorage.Server:FireServer("UseItem", 1)
-if not game:GetService("Players").LocalPlayer.PlayerData.Quests:FindFirstChild("Decimating Flames") then
-	questR:FireServer("MainAction", objval1)
-end
-if not game:GetService("Players").LocalPlayer.PlayerData.Quests:FindFirstChild("Drilling Mission") then
-	questR:FireServer("MainAction", objval2)
-end
-if not game:GetService("Players").LocalPlayer.PlayerData.Quests:FindFirstChild("Hate and Eternity") then
-	questR:FireServer("MainAction", objval3)
-end
-if not game:GetService("Players").LocalPlayer.PlayerData.Quests:FindFirstChild("Get down here!") then
-	questR:FireServer("MainAction", objval4)
-end
-if not game:GetService("Players").LocalPlayer.PlayerData.Quests:FindFirstChild("Anger Issues") then
-	questR:FireServer("MainAction", objval5)
-end
-if game:GetService("Players").LocalPlayer.leaderstats.Gold.Value > 900000000000 then
-	for i = 1, 5 do
-		buyR:FireServer("Buy5", workspace:WaitForChild("Stalls"):WaitForChild("Initus Bay"):WaitForChild("Item Shop"):WaitForChild("Shop"):WaitForChild("Blubb Pizza"))
+	local questremote = workspace.QuestNPCs.Main.onClick
+	local points = game:GetService("Players").LocalPlayer.PlayerData.Stats.LevelUpPoints.Value
+	game.ReplicatedStorage.Server:FireServer("Invest", "Shield", points - 1)
+	game.ReplicatedStorage.Server:FireServer("Invest", "Mana", 1)
+	game.ReplicatedStorage.Server:FireServer("ResetPoints")
+	game.ReplicatedStorage.Server:FireServer("UseItem", 1)
+	if not game:GetService("Players").LocalPlayer.PlayerData.Quests:FindFirstChild("Decimating Flames") then
+		questR:FireServer("MainAction", objval1)
 	end
-end
-task.wait(0.5)
-for _, main in pairs(workspace:GetChildren()) do
-	local hitboxName = "Hitbox"
-
-    if main:IsA("BasePart") and main.Name == hitboxName then
-        firetouchinterest(hrp, main, 0) 
-        firetouchinterest(hrp, main, 1)
-    end
-
-	if main.Name == "Text" or main.Name == "HitEffect" or main.Name == "DefeatedEffect" or main.Name == "Number" or main.Name == "BigShot" then
-		main:Destroy()
+	if not game:GetService("Players").LocalPlayer.PlayerData.Quests:FindFirstChild("Drilling Mission") then
+		questR:FireServer("MainAction", objval2)
 	end
-		if main.Name == char.Name then
+	if not game:GetService("Players").LocalPlayer.PlayerData.Quests:FindFirstChild("Hate and Eternity") then
+		questR:FireServer("MainAction", objval3)
+	end
+	if not game:GetService("Players").LocalPlayer.PlayerData.Quests:FindFirstChild("Get down here!") then
+		questR:FireServer("MainAction", objval4)
+	end
+	if not game:GetService("Players").LocalPlayer.PlayerData.Quests:FindFirstChild("Anger Issues") then
+		questR:FireServer("MainAction", objval5)
+	end
+	if game:GetService("Players").LocalPlayer.leaderstats.Gold.Value > 900000000000 then
+		for i = 1, 5 do
+			buyR:FireServer("Buy5", workspace:WaitForChild("Stalls"):WaitForChild("Initus Bay"):WaitForChild("Item Shop"):WaitForChild("Shop"):WaitForChild("Blubb Pizza"))
+		end
+	end
+	task.wait(0.5)
+	for _, main in pairs(workspace:GetChildren()) do
+		local hitboxName = "Hitbox"
+
+	    if main:IsA("BasePart") and main.Name == hitboxName then
+    	    firetouchinterest(hrp, main, 0) 
+        	firetouchinterest(hrp, main, 1)
+    	elseif main.Name == "Lily" or main.Name == "DeathBush" or main.Name == "DragonBall" then
+			local mid = main:FindFirstChild("Middle")
+			firetouchinterest(hrp, mid, 0) 
+        	firetouchinterest(hrp, mid, 1)
+			--HRP.CFrame = main.CFrame
+		elseif main.Name == "Text" or main.Name == "HitEffect" or main.Name == "DefeatedEffect" or main.Name == "Number" or main.Name == "BigShot" then
+			main:Destroy()
+		elseif main.Name == char.Name then
 			for _, thing in pairs(main:GetChildren()) do
     			if thing and thing.Name == "AttackBuff_Blood" or thing.Name == "AttackBuff_BigShot" then
 					thing:Destroy()
-   				end
-				if thing.Name == "Torso" then
+   				elseif thing.Name == "Torso" then
 					for _, thing2 in pairs(thing:GetChildren()) do
 						if thing2 and thing2.Name == "Particle" or thing2.Name == "Light" or thing2.Name == "RestoreEffect" or thing2.Name == "ShieldBreakEffect" then
 							thing2:Destroy()
